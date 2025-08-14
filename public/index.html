@@ -4,128 +4,306 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Experimental Realism AI (ERA)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Modern, clean font for a Shopify-like look -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        .example-card:hover {
-            transform: translateY(-5px);
-            border-color: #667eea;
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
-        }
-        .netflix-preview {
-            background-image: linear-gradient(135deg, #e50914 0%, #221f1f 100%);
-        }
-        .dropbox-preview {
-            background-image: linear-gradient(135deg, #0061ff 0%, #60c3ff 100%);
-        }
-        .spotify-preview {
-            background-image: linear-gradient(135deg, #1db954 0%, #191414 100%);
-        }
-        .amazon-preview {
-            background-image: linear-gradient(135deg, #ff9900 0%, #232f3e 100%);
-        }
-        .walmart-preview {
-            background-image: linear-gradient(135deg, #004c91 0%, #ffc220 100%);
-        }
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --navbar-bg: #111212;
+            --navbar-hover: #08ffe6;
+            --navbar-light: #e0e0e0;
+            --main-bg: #18191b;
+            --primary: #fff;
+            --secondary: #d1d5db;
+            --accent: #08ffe6;
+            --form-bg: #222326;
         }
 
+        html, body {
+            height: 100%;
+        }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--primary);
+            background: var(--main-bg);
             min-height: 100vh;
         }
 
+        /* NAVBAR */
+        .navbar {
+            width: 100%;
+            padding: 0 0.5rem;
+            height: 70px;
+            background: var(--navbar-bg);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 18px rgba(8,255,230,0.03);
+            position: sticky;
+            top: 0;
+            z-index: 1050;
+        }
+        .navbar-left {
+            display: flex;
+            align-items: center;
+        }
+        .logo-placeholder {
+            width: 40px;
+            height: 40px;
+            background: var(--navbar-hover);
+            border-radius: 10px;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #151515;
+            letter-spacing: -2px;
+        }
+        .navbar-title {
+            font-size: 1.55rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-right: 38px;
+            letter-spacing: -1px;
+            white-space: nowrap;
+        }
+        .navbar-center {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+        }
+        .navbar-link, .navbar-dropdown > a {
+            color: var(--navbar-light);
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            padding: 10px 11px;
+            border-radius: 7px;
+            transition: color 0.18s, background 0.15s;
+            cursor: pointer;
+            position: relative;
+            border: none;
+            background: none;
+            outline: none;
+        }
+        .navbar-link:hover, .navbar-dropdown > a:hover, .navbar-dropdown .dropdown-content a:hover {
+            color: var(--navbar-hover);
+            background: rgba(8,255,230,0.07);
+        }
+        .navbar-dropdown {
+            position: relative;
+        }
+        .navbar-dropdown .dropdown-content {
+            display: none;
+            position: absolute;
+            left: 0;
+            top: 100%;
+            min-width: 230px;
+            background: #232323;
+            border-radius: 8px;
+            margin-top: 4px;
+            box-shadow: 0 6px 32px rgba(8,255,230,0.13);
+            padding: 0.5rem 0;
+            z-index: 1200;
+        }
+        .navbar-dropdown:hover .dropdown-content, .navbar-dropdown:focus-within .dropdown-content {
+            display: block;
+        }
+        .dropdown-category {
+            padding: 0.5rem 1rem;
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 1.01rem;
+            margin-top: 3px;
+            margin-bottom: 4px;
+        }
+        .dropdown-content a {
+            display: block;
+            padding: 8px 27px;
+            color: var(--navbar-light);
+            font-size: 0.99rem;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: color 0.17s, background 0.14s;
+        }
+        .navbar-link.active, .navbar-link.active:hover {
+            color: var(--accent);
+            background: rgba(8,255,230,0.12);
+        }
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .navbar-action {
+            color: var(--accent);
+            background: none;
+            border: 1.5px solid var(--accent);
+            padding: 7px 19px;
+            border-radius: 7px;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-left: 10px;
+            cursor: pointer;
+            transition: background 0.19s, color 0.19s;
+            text-decoration: none;
+        }
+        .navbar-action:hover {
+            background: var(--accent);
+            color: #111212;
+        }
+        .navbar-login {
+            color: var(--primary);
+            background: none;
+            border: 1.3px solid var(--primary);
+            padding: 7px 19px;
+            border-radius: 7px;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-left: 10px;
+            cursor: pointer;
+            transition: background 0.19s, color 0.19s, border 0.12s;
+            text-decoration: none;
+        }
+        .navbar-login:hover {
+            background: var(--primary);
+            color: var(--navbar-bg);
+            border: 1.3px solid var(--accent);
+        }
+        /* Responsive tweaks */
+        @media (max-width: 1100px) {
+            .navbar-center {
+                gap: 0.3rem;
+            }
+            .navbar-title {
+                font-size: 1.15rem;
+            }
+        }
+        @media (max-width: 900px) {
+            .navbar {
+                flex-direction: column;
+                align-items: stretch;
+                height: auto;
+                padding-bottom: 8px;
+            }
+            .navbar-left, .navbar-center, .navbar-right {
+                flex-direction: row;
+                justify-content: flex-start;
+                margin-bottom: 3px;
+            }
+            .navbar-center {
+                flex-wrap: wrap;
+                gap: 0.7rem;
+            }
+        }
+        @media (max-width: 700px) {
+            .navbar {
+                flex-direction: column;
+                align-items: stretch;
+                height: auto;
+                padding-bottom: 8px;
+            }
+            .navbar-center {
+                flex-wrap: wrap;
+                gap: 0.3rem;
+            }
+            .navbar-title {
+                font-size: 1.02rem;
+            }
+        }
+        /* LANDING PAGE CONTENT */
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem;
         }
-
         .header {
             text-align: center;
             margin-bottom: 3rem;
-            color: white;
+            color: var(--primary);
         }
-
         .header h1 {
-            font-size: 3.5rem;
-            font-weight: 700;
+            font-size: 3.2rem;
+            font-weight: 800;
             margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 7px rgba(8,255,230,0.08);
+            letter-spacing: -2px;
         }
-
         .header .subtitle {
             font-size: 2rem;
             margin-bottom: 3rem;
-            font-weight: 300;
+            font-weight: 400;
+            color: var(--secondary);
         }
-
         .cta-intro {
-            color: white;
-            font-size: 1.1rem;
+            color: var(--secondary);
+            font-size: 1.09rem;
             margin-bottom: 2rem;
-            opacity: 0.9;
+            opacity: 0.87;
+            transition: color 0.17s;
         }
-
+        .cta-intro:hover {
+            color: var(--accent);
+        }
         .cta-section {
             text-align: center;
             margin: 4rem 0;
         }
-
         .cta-button {
-            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
-            color: white;
+            background: linear-gradient(90deg, var(--accent) 0%, #43e97b 100%);
+            color: #18191b;
             padding: 1.5rem 3rem;
             font-size: 1.5rem;
-            font-weight: 600;
+            font-weight: 700;
             border: none;
             border-radius: 50px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 25px rgba(238, 90, 36, 0.3);
+            transition: all 0.23s ease;
+            box-shadow: 0 8px 25px rgba(8,255,230,0.11);
             text-decoration: none;
             display: inline-block;
         }
-
         .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 35px rgba(238, 90, 36, 0.4);
+            background: linear-gradient(90deg, #43e97b 0%, var(--accent) 100%);
+            color: #151515;
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 12px 35px rgba(8,255,230,0.18);
         }
-
         .cta-description {
             margin-top: 1rem;
-            color: white;
+            color: var(--secondary);
             opacity: 0.8;
-            font-size: 0.9rem;
+            font-size: 0.96rem;
+            transition: color 0.17s;
         }
-
+        .cta-description:hover {
+            color: var(--accent);
+        }
         .examples-section {
-            background: white;
+            background: #212324;
             border-radius: 20px;
             padding: 3rem;
             margin: 4rem 0;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 40px rgba(8,255,230,0.06);
         }
-
         .examples-title {
             text-align: center;
             font-size: 2rem;
             margin-bottom: 2rem;
-            color: #333;
+            color: var(--primary);
         }
-
         .examples-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 1.5rem;
         }
-
         .example-card {
-            background: #f8f9fa;
+            background: #232426;
             border-radius: 12px;
             padding: 0;
             text-align: center;
@@ -134,7 +312,10 @@
             border: 2px solid transparent;
             overflow: hidden;
         }
-
+        .example-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 8px 35px rgba(8,255,230,0.11);
+        }
         .example-preview {
             width: 100%;
             height: 200px;
@@ -143,7 +324,6 @@
             background-repeat: no-repeat;
             position: relative;
         }
-
         .example-preview::after {
             content: '';
             position: absolute;
@@ -153,56 +333,53 @@
             bottom: 0;
             background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 100%);
         }
-
         .example-content {
             padding: 1.5rem;
             position: relative;
         }
-
         .example-card h3 {
-            color: #333;
+            color: var(--primary);
             margin-bottom: 0.5rem;
             font-size: 1.2rem;
         }
-
         .example-card p {
-            color: #666;
+            color: var(--secondary);
             font-size: 0.9rem;
         }
-
         .how-it-works {
-            background: rgba(255,255,255,0.1);
+            background: #232324;
             border-radius: 20px;
             padding: 3rem;
             margin: 4rem 0;
-            backdrop-filter: blur(10px);
-            color: white;
+            color: var(--primary);
         }
-
         .how-it-works h2 {
             text-align: center;
             font-size: 2rem;
             margin-bottom: 2rem;
+            color: var(--primary);
         }
-
         .steps {
             counter-reset: step-counter;
         }
-
         .step {
             counter-increment: step-counter;
             margin-bottom: 1.5rem;
             padding-left: 3rem;
             position: relative;
+            color: var(--secondary);
+            transition: color 0.19s;
         }
-
+        .step:hover {
+            color: var(--primary);
+        }
         .step::before {
             content: counter(step-counter);
             position: absolute;
             left: 0;
             top: 0;
-            background: #ff6b6b;
-            color: white;
+            background: var(--accent);
+            color: #232324;
             width: 2rem;
             height: 2rem;
             border-radius: 50%;
@@ -212,7 +389,7 @@
             font-weight: bold;
         }
 
-        /* Modal Styles */
+        /* Modal Styles (mostly unchanged, but re-colored for dark bg) */
         .modal {
             display: none;
             position: fixed;
@@ -221,12 +398,11 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px);
+            background-color: rgba(10,10,10,0.68);
+            backdrop-filter: blur(6px);
         }
-
         .modal-content {
-            background-color: white;
+            background-color: var(--form-bg);
             margin: 2% auto;
             padding: 2rem;
             border-radius: 20px;
@@ -235,8 +411,8 @@
             max-height: 90vh;
             overflow-y: auto;
             position: relative;
+            color: var(--primary);
         }
-
         .close {
             color: #aaa;
             float: right;
@@ -247,122 +423,99 @@
             right: 1rem;
             top: 1rem;
         }
-
         .close:hover {
-            color: #000;
+            color: var(--accent);
         }
-
         .form-group {
             margin-bottom: 2rem;
         }
-
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 600;
-            color: #333;
+            color: var(--primary);
         }
-
         .form-group input[type="text"],
         .form-group input[type="email"],
         .form-group textarea {
             width: 100%;
             padding: 0.75rem;
-            border: 2px solid #e1e8ed;
+            border: 2px solid #383838;
             border-radius: 8px;
             font-size: 1rem;
             transition: border-color 0.3s ease;
+            background: #191a1b;
+            color: var(--primary);
         }
-
         .form-group input:focus,
         .form-group textarea:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--accent);
         }
-
         .form-group textarea {
             height: 100px;
             resize: vertical;
         }
-
-        .radio-group {
+        .radio-group, .checkbox-group {
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
         }
-
-        .radio-item {
+        .radio-item, .checkbox-item {
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
-
-        .checkbox-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
         .conditional-field {
             display: none;
             margin-top: 1rem;
             padding: 1rem;
-            background: #f8f9fa;
+            background: #26282c;
             border-radius: 8px;
         }
-
         .submit-btn {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
+            background: linear-gradient(45deg, var(--accent), #43e97b);
+            color: #232324;
             padding: 1rem 2rem;
             font-size: 1.1rem;
             font-weight: 600;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.23s;
             width: 100%;
         }
-
         .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            background: linear-gradient(45deg, #43e97b, var(--accent));
+            color: #18191b;
+            box-shadow: 0 8px 20px rgba(8,255,230,0.13);
         }
-
         .prompt-result {
             display: none;
-            background: #f8f9fa;
+            background: #212324;
             padding: 2rem;
             border-radius: 12px;
             margin-top: 2rem;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid var(--accent);
+            color: var(--primary);
         }
-
         .prompt-result h3 {
-            color: #333;
+            color: var(--primary);
             margin-bottom: 1rem;
         }
-
         .prompt-text {
-            background: white;
+            background: #18191b;
             padding: 1rem;
             border-radius: 8px;
             font-family: monospace;
             white-space: pre-wrap;
-            border: 1px solid #e1e8ed;
+            border: 1px solid #242627;
             max-height: 300px;
             overflow-y: auto;
         }
-
         .copy-btn {
-            background: #28a745;
-            color: white;
+            background: #08ffe6;
+            color: #19191a;
             padding: 0.5rem 1rem;
             border: none;
             border-radius: 4px;
@@ -370,7 +523,6 @@
             margin-top: 1rem;
             font-size: 0.9rem;
         }
-
         /* Stepper styles for the modal */
         .stepper {
             display: flex;
@@ -378,48 +530,81 @@
             align-items: center;
             margin-bottom: 2rem;
         }
-
         .step-dot {
             width: 18px;
             height: 18px;
             border-radius: 50%;
-            background: #e1e8ed;
+            background: #333;
             margin: 0 8px;
             transition: background 0.3s;
         }
-
         .step-dot.active {
-            background: #667eea;
+            background: var(--accent);
         }
-
         @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2.5rem;
-            }
-            .container {
-                padding: 1rem;
-            }
-            .modal-content {
-                margin: 5% auto;
-                padding: 1.5rem;
-            }
+            .header h1 { font-size: 2.5rem; }
+            .container { padding: 1rem; }
+            .modal-content { margin: 5% auto; padding: 1.5rem; }
+            .navbar-center, .navbar-right { gap: 0.3rem; }
         }
     </style>
 </head>
 <body>
+    <nav class="navbar">
+        <div class="navbar-left">
+            <div class="logo-placeholder">E</div>
+            <span class="navbar-title">Experimental Realism AI (ERA)</span>
+        </div>
+        <div class="navbar-center">
+            <a class="navbar-link" href="#about">About</a>
+            <div class="navbar-dropdown">
+                <a class="navbar-link" href="#examples">Examples</a>
+                <div class="dropdown-content">
+                    <div class="dropdown-category">Simple Consumer Choice</div>
+                    <a href="#">Specific Ex 1</a>
+                    <a href="#">Specific Ex 2</a>
+                    <a href="#">Specific Ex 3</a>
+                    <div class="dropdown-category">Subscription Choice</div>
+                    <a href="#">Specific Ex 1</a>
+                    <a href="#">Specific Ex 2</a>
+                    <a href="#">Specific Ex 3</a>
+                    <div class="dropdown-category">Decision with Process Tracing</div>
+                    <a href="#">Specific Ex 1</a>
+                    <a href="#">Specific Ex 2</a>
+                    <a href="#">Specific Ex 3</a>
+                    <div class="dropdown-category">Other</div>
+                    <a href="#">Specific Ex 1</a>
+                    <a href="#">Specific Ex 2</a>
+                    <a href="#">Specific Ex 3</a>
+                </div>
+            </div>
+            <a class="navbar-link" href="#create">Create Here</a>
+            <a class="navbar-link" href="#how-it-works">How it Works</a>
+            <div class="navbar-dropdown">
+                <a class="navbar-link" href="#integrations">Integrations</a>
+                <div class="dropdown-content">
+                    <a href="#">Qualtrics</a>
+                    <a href="#">Other Integrations</a>
+                </div>
+            </div>
+            <a class="navbar-link" href="#process-tracing">Process Tracing</a>
+        </div>
+        <div class="navbar-right">
+            <a class="navbar-login" href="#">Login</a>
+            <a class="navbar-action" href="#">See Your Designs</a>
+        </div>
+    </nav>
     <div class="container">
         <header class="header">
             <h1>Experimental Realism AI (ERA)</h1>
             <p class="subtitle">Make your consumer behavior experiments look and feel just like the actual website.</p>
         </header>
-
         <div class="cta-section">
             <p class="cta-intro">Start with a screenshot of any online retail webpage. Then, click 'Begin Here' and we will help you design it and integrate with Qualtrics.</p>
             <button class="cta-button" onclick="openModal()">Begin Here</button>
             <p class="cta-description">Click 'Begin Here' to create your realistic consumer choice screen</p>
         </div>
-
-        <section class="examples-section">
+        <section class="examples-section" id="examples">
             <h2 class="examples-title">Examples: Realistic Consumer Choice Experiments</h2>
             <div class="examples-grid">
                 <div class="example-card" onclick="window.open('https://vlab.decisionsciences.columbia.edu/kmrkva/mlwebexamples/netflix_2025.html')">
@@ -459,18 +644,16 @@
                 </div>
             </div>
         </section>
-
-        <section class="how-it-works">
+        <section class="how-it-works" id="how-it-works">
             <h2>How it works:</h2>
             <div class="steps">
                 <div class="step">Decide which webpage/consumer choice you want to mimic. Take a screenshot of it.</div>
                 <div class="step">Click "Begin Here", upload the screenshot, and fill out a short form about the variables you want to track.</div>
-                <div class="step">Interate with Qualtrics. (See more details about Qualtrics & other integrations). </div>
+                <div class="step">Integrate with Qualtrics. (See more details about Qualtrics & other integrations). </div>
             </div>
         </section>
     </div>
-
-    <!-- Modal -->
+    <!-- Modal (unchanged except for colors) -->
     <div id="formModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
@@ -502,7 +685,6 @@
                         <label for="email">Your Email Address:</label>
                         <input type="email" id="email" name="email" required>
                     </div>
-
                     <div class="form-group">
                         <label>When should the webpage redirect back to Qualtrics?</label>
                         <div class="radio-group">
@@ -521,7 +703,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="form-group">
                         <label>Which of the following data points do you want to record? (These will be added to your Qualtrics data if you follow the steps for embedded data)</label>
                         <div class="checkbox-group">
@@ -543,12 +724,10 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="form-group">
                         <label for="modifications">Describe anything you want to look different on your webpage than in your screenshot:</label>
                         <textarea id="modifications" name="modifications" placeholder="Describe any changes you'd like to make..."></textarea>
                     </div>
-
                     <div class="form-group">
                         <label>Does your experiment require 2+ versions of this webpage? (i.e. multiple conditions that will show the same webpage but with 1 change or experimental manipulation)</label>
                         <div class="radio-group">
@@ -566,15 +745,12 @@
                             <textarea id="versionDifference" name="versionDifference" placeholder="Describe the differences between versions..."></textarea>
                         </div>
                     </div>
-
                     <div class="form-group">
                         <label for="qualtricsUrl">What is the URL for your Qualtrics survey?</label>
                         <input type="text" id="qualtricsUrl" name="qualtricsUrl" placeholder="https://your-qualtrics-survey-url.com" required>
                     </div>
-
                     <button type="submit" class="submit-btn">Generate Prompt</button>
                 </form>
-
                 <div id="promptResult" class="prompt-result">
                     <h3>Your Generated Prompt:</h3>
                     <div id="promptText" class="prompt-text"></div>
@@ -586,44 +762,33 @@
             </div>
         </div>
     </div>
-
     <script>
         function openModal() {
             document.getElementById('formModal').style.display = 'block';
-            // Show first step and set stepper
             document.getElementById('modal-step-1').style.display = 'block';
             document.getElementById('modal-step-2').style.display = 'none';
             setStepper(1);
         }
-
         function closeModal() {
             document.getElementById('formModal').style.display = 'none';
         }
-
         function setStepper(step) {
             document.getElementById('dot-1').classList.toggle('active', step === 1);
             document.getElementById('dot-2').classList.toggle('active', step === 2);
         }
-
         function goToStep2() {
-            // You could add validation here if you want at least one of screenshot or description
             document.getElementById('modal-step-1').style.display = 'none';
             document.getElementById('modal-step-2').style.display = 'block';
             setStepper(2);
         }
-
         function toggleVersionDescription() {
             const yesSelected = document.getElementById('multipleVersionsYes').checked;
             const descriptionField = document.getElementById('versionDescription');
             descriptionField.style.display = yesSelected ? 'block' : 'none';
         }
-
         function handleSubmit(event) {
             event.preventDefault();
-            
             const formData = new FormData(event.target);
-            
-            // Get form values
             const email = formData.get('email');
             const redirect = formData.get('redirect');
             const customRedirect = document.getElementById('customRedirect').value;
@@ -632,8 +797,6 @@
             const multipleVersions = formData.get('multipleVersions');
             const versionDifference = formData.get('versionDifference');
             const qualtricsUrl = formData.get('qualtricsUrl');
-
-            // Generate prompt
             const prompt = generatePrompt({
                 email,
                 redirect: redirect === 'custom action' ? customRedirect : redirect,
@@ -643,19 +806,12 @@
                 versionDifference,
                 qualtricsUrl
             });
-
-            // Display prompt
             document.getElementById('promptText').textContent = prompt;
             document.getElementById('promptResult').style.display = 'block';
-
-            // Send emails (in a real implementation, this would be handled by a backend service)
             sendEmails(email, prompt);
         }
-
         function generatePrompt(data) {
             let prompt = "Please make a .html webpage based on the following:\n\n";
-            
-            // Add first 3 words of each response
             const responses = [
                 data.email,
                 data.redirect,
@@ -664,44 +820,35 @@
                 data.multipleVersions + (data.versionDifference ? ': ' + data.versionDifference : ''),
                 data.qualtricsUrl
             ];
-
             responses.forEach(response => {
                 if (response) {
                     const firstThreeWords = response.split(' ').slice(0, 3).join(' ');
                     prompt += firstThreeWords + '\n';
                 }
             });
-
-            // Add redirect instruction
             const redirectAction = data.redirect.split(' ').slice(3).join(' ') || data.redirect;
             prompt += `\nPlease redirect to ${data.qualtricsUrl} when the user ${redirectAction}`;
-
             return prompt;
         }
-
         function sendEmails(userEmail, prompt) {
-            // Note: In a real implementation, this would make an API call to a backend service
-            // that handles email sending using a service like SendGrid, Mailgun, etc.
+            // Stub: in real impl, send to backend
             console.log('Sending email to:', userEmail);
             console.log('Sending email to: kmrkva@alumni.nd.edu');
             console.log('Prompt:', prompt);
         }
-
         function copyPrompt() {
             const promptText = document.getElementById('promptText').textContent;
             navigator.clipboard.writeText(promptText).then(() => {
                 const btn = event.target;
                 const originalText = btn.textContent;
                 btn.textContent = 'Copied!';
-                btn.style.background = '#28a745';
+                btn.style.background = '#43e97b';
                 setTimeout(() => {
                     btn.textContent = originalText;
                     btn.style.background = '';
                 }, 2000);
             });
         }
-
-        // Close modal when clicking outside of it
         window.onclick = function(event) {
             const modal = document.getElementById('formModal');
             if (event.target === modal) {
