@@ -6,7 +6,6 @@
     <title>Experimental Realism AI (ERA)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Modern, clean font for a Shopify-like look -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -19,7 +18,6 @@
             --accent: #08ffe6;
             --form-bg: #222326;
         }
-
         html, body {
             height: 100%;
         }
@@ -30,8 +28,6 @@
             background: var(--main-bg);
             min-height: 100vh;
         }
-
-        /* NAVBAR */
         .navbar {
             width: 100%;
             padding: 0 0.5rem;
@@ -59,13 +55,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 0.95rem;
             font-weight: 800;
             color: #151515;
             letter-spacing: -2px;
         }
         .navbar-title {
-            font-size: 1.55rem;
+            font-size: 1.4rem;
             font-weight: 800;
             color: var(--primary);
             margin-right: 38px;
@@ -80,7 +76,7 @@
         .navbar-link, .navbar-dropdown > a {
             color: var(--navbar-light);
             text-decoration: none;
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 500;
             padding: 10px 11px;
             border-radius: 7px;
@@ -126,7 +122,7 @@
             display: block;
             padding: 8px 27px;
             color: var(--navbar-light);
-            font-size: 0.99rem;
+            font-size: 0.85rem;
             text-decoration: none;
             border-radius: 6px;
             transition: color 0.17s, background 0.14s;
@@ -175,7 +171,6 @@
             color: var(--navbar-bg);
             border: 1.3px solid var(--accent);
         }
-        /* Responsive tweaks */
         @media (max-width: 1100px) {
             .navbar-center {
                 gap: 0.3rem;
@@ -216,7 +211,6 @@
                 font-size: 1.02rem;
             }
         }
-        /* LANDING PAGE CONTENT */
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -323,6 +317,7 @@
             background-position: center;
             background-repeat: no-repeat;
             position: relative;
+            display: block;
         }
         .example-preview::after {
             content: '';
@@ -388,8 +383,6 @@
             justify-content: center;
             font-weight: bold;
         }
-
-        /* Modal Styles (mostly unchanged, but re-colored for dark bg) */
         .modal {
             display: none;
             position: fixed;
@@ -523,7 +516,6 @@
             margin-top: 1rem;
             font-size: 0.9rem;
         }
-        /* Stepper styles for the modal */
         .stepper {
             display: flex;
             justify-content: center;
@@ -552,8 +544,8 @@
 <body>
     <nav class="navbar">
         <div class="navbar-left">
-            <div class="logo-placeholder">E</div>
-            <span class="navbar-title">Experimental Realism AI (ERA)</span>
+            <div class="logo-placeholder">E R A</div>
+            <span class="navbar-title">Experimental Realism AI</span>
         </div>
         <div class="navbar-center">
             <a class="navbar-link" href="#about">About</a>
@@ -578,12 +570,12 @@
                     <a href="#">Specific Ex 3</a>
                 </div>
             </div>
-            <a class="navbar-link" href="#create">Create Here</a>
-            <a class="navbar-link" href="#how-it-works">How it Works</a>
+            <a class="navbar-link" href="#create">Create</a>
+            <a class="navbar-link" href="#how-it-works">How To</a>
             <div class="navbar-dropdown">
                 <a class="navbar-link" href="#integrations">Integrations</a>
                 <div class="dropdown-content">
-                    <a href="#">Qualtrics</a>
+                    <a href="#">Integrate With Qualtrics</a>
                     <a href="#">Other Integrations</a>
                 </div>
             </div>
@@ -642,6 +634,21 @@
                         <p>Realistic Apple page (which iPhone is best for you), with edits to permit mouselabWEB-like process tracking.</p>
                     </div>
                 </div>
+                <!-- NEW: Share Your Example card -->
+				<div class="example-card" style="cursor:pointer;" onclick="document.getElementById('shareExampleModal').style.display='block'">
+					<div class="example-preview" style="background: #232426; display: flex; align-items: center; justify-content: center; position:relative; flex-direction: column;">
+						<svg width="64" height="64" fill="none" stroke="#08ffe6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 64 64">
+							<rect x="12" y="12" width="40" height="40" rx="8" stroke="#08ffe6" stroke-width="2.5" fill="none"/>
+							<path d="M32 22v20M22 32h20" stroke="#08ffe6"/>
+						</svg>
+						<!-- Add this line below for the extra text: -->
+						<span style="color:#08ffe6;font-size:1.02rem;margin-top:10px;font-weight:600;">Upload your design here</span>
+					</div>
+					<div class="example-content">
+						<h3>Share Your Example</h3>
+						<p>Have an example for other researchers? Click here to share it &amp; help expand our tool's reach across topics and contexts.</p>
+					</div>
+				</div>
             </div>
         </section>
         <section class="how-it-works" id="how-it-works">
@@ -653,7 +660,29 @@
             </div>
         </section>
     </div>
-    <!-- Modal (unchanged except for colors) -->
+    <!-- Modal for Share Your Example -->
+    <div id="shareExampleModal" class="modal" style="z-index:1201;">
+        <div class="modal-content" style="max-width:400px;">
+            <span class="close" onclick="document.getElementById('shareExampleModal').style.display='none'">&times;</span>
+            <h2 style="margin-bottom:1.5rem;">Share Your Example</h2>
+            <form onsubmit="event.preventDefault(); document.getElementById('shareExampleModal').style.display='none'; alert('Thank you for sharing your example! We will review it soon.');">
+                <div class="form-group">
+                    <label for="exampleUpload">Upload Screenshot or File:</label>
+                    <input type="file" id="exampleUpload" accept=".jpg,.jpeg,.png,.pdf,.docx,.zip">
+                </div>
+                <div class="form-group">
+                    <label for="yourEmail">Your Email (optional):</label>
+                    <input type="email" id="yourEmail" placeholder="name@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="exampleDesc">Description (optional):</label>
+                    <textarea id="exampleDesc" placeholder="Describe your example and why it may help other researchers..."></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Submit Example</button>
+            </form>
+        </div>
+    </div>
+    <!-- Main Modal (unchanged except for colors) -->
     <div id="formModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
@@ -831,7 +860,6 @@
             return prompt;
         }
         function sendEmails(userEmail, prompt) {
-            // Stub: in real impl, send to backend
             console.log('Sending email to:', userEmail);
             console.log('Sending email to: kmrkva@alumni.nd.edu');
             console.log('Prompt:', prompt);
@@ -851,9 +879,9 @@
         }
         window.onclick = function(event) {
             const modal = document.getElementById('formModal');
-            if (event.target === modal) {
-                closeModal();
-            }
+            const shareModal = document.getElementById('shareExampleModal');
+            if (event.target === modal) closeModal();
+            if (event.target === shareModal) shareModal.style.display = 'none';
         }
     </script>
 </body>
