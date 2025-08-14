@@ -52,7 +52,7 @@ const upload = multer({
 });
 
 // Email configuration
-const transporter = nodemailer.createTransporter({
+const transporter = nodemailer.createTransport({
     service: 'gmail', // or your preferred email service
     auth: {
         user: process.env.EMAIL_USER, // Your email
