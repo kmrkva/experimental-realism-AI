@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Experimental Realism AI (ERA)</title>
     <style>
-        /* Insert at the top of your <style> tag: */
         .example-card:hover {
             transform: translateY(-5px);
             border-color: #667eea;
@@ -31,7 +30,6 @@
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             line-height: 1.6;
@@ -39,619 +37,155 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
         }
-
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
+            max-width: 700px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+            padding: 32px 24px 24px 24px;
         }
-
-        .header {
-            text-align: center;
-            margin-bottom: 3rem;
-            color: white;
-        }
-
-        .header h1 {
-            font-size: 3.5rem;
+        h1 {
+            font-size: 2.2rem;
             font-weight: 700;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .header .subtitle {
-            font-size: 2rem;
-            margin-bottom: 3rem;
-            font-weight: 300;
-        }
-
-        .cta-intro {
-            color: white;
-            font-size: 1.1rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
-        }
-
-        .cta-section {
-            text-align: center;
-            margin: 4rem 0;
-        }
-
-        .cta-button {
-            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
-            color: white;
-            padding: 1.5rem 3rem;
-            font-size: 1.5rem;
-            font-weight: 600;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 25px rgba(238, 90, 36, 0.3);
-            text-decoration: none;
+            margin-bottom: 16px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
             display: inline-block;
-        }
-
-        .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 35px rgba(238, 90, 36, 0.4);
-        }
-
-        .cta-description {
-            margin-top: 1rem;
-            color: white;
-            opacity: 0.8;
-            font-size: 0.9rem;
-        }
-
-        .examples-section {
-            background: white;
-            border-radius: 20px;
-            padding: 3rem;
-            margin: 4rem 0;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-        }
-
-        .examples-title {
-            text-align: center;
-            font-size: 2rem;
-            margin-bottom: 2rem;
-            color: #333;
-        }
-
-        .examples-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .example-card {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 0;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-            overflow: hidden;
-        }
-
-        .example-preview {
-            width: 100%;
-            height: 200px;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            position: relative;
-        }
-
-        .example-preview::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 100%);
-        }
-
-        .example-content {
-            padding: 1.5rem;
-            position: relative;
-        }
-
-        .example-card h3 {
-            color: #333;
-            margin-bottom: 0.5rem;
-            font-size: 1.2rem;
-        }
-
-        .example-card p {
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        .how-it-works {
-            background: rgba(255,255,255,0.1);
-            border-radius: 20px;
-            padding: 3rem;
-            margin: 4rem 0;
-            backdrop-filter: blur(10px);
-            color: white;
-        }
-
-        .how-it-works h2 {
-            text-align: center;
-            font-size: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .steps {
-            counter-reset: step-counter;
-        }
-
-        .step {
-            counter-increment: step-counter;
-            margin-bottom: 1.5rem;
-            padding-left: 3rem;
-            position: relative;
-        }
-
-        .step::before {
-            content: counter(step-counter);
-            position: absolute;
-            left: 0;
-            top: 0;
-            background: #ff6b6b;
-            color: white;
-            width: 2rem;
-            height: 2rem;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-content {
-            background-color: white;
-            margin: 2% auto;
-            padding: 2rem;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 800px;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
-        }
-
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            position: absolute;
-            right: 1rem;
-            top: 1rem;
-        }
-
-        .close:hover {
-            color: #000;
-        }
-
-        .form-group {
-            margin-bottom: 2rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .form-group input[type="text"],
-        .form-group input[type="email"],
-        .form-group textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border: 2px solid #e1e8ed;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .form-group textarea {
-            height: 100px;
-            resize: vertical;
-        }
-
-        .radio-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .radio-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .checkbox-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .conditional-field {
-            display: none;
-            margin-top: 1rem;
-            padding: 1rem;
-            background: #f8f9fa;
+            padding: 8px 24px;
             border-radius: 8px;
         }
-
-        .submit-btn {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            padding: 1rem 2rem;
+        .center {
+            text-align: center;
+        }
+        button, input[type="submit"] {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 32px;
             font-size: 1.1rem;
             font-weight: 600;
-            border: none;
-            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            width: 100%;
+            margin: 18px 0 0 0;
+            transition: background 0.18s;
         }
-
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        button:hover, input[type="submit"]:hover {
+            background: linear-gradient(90deg, #764ba2 0%, #667eea 100%);
         }
-
-        .prompt-result {
+        .step {
             display: none;
-            background: #f8f9fa;
-            padding: 2rem;
-            border-radius: 12px;
-            margin-top: 2rem;
-            border-left: 4px solid #667eea;
         }
-
-        .prompt-result h3 {
-            color: #333;
-            margin-bottom: 1rem;
+        .step.active {
+            display: block;
         }
-
-        .prompt-text {
-            background: white;
-            padding: 1rem;
-            border-radius: 8px;
-            font-family: monospace;
-            white-space: pre-wrap;
-            border: 1px solid #e1e8ed;
-            max-height: 300px;
-            overflow-y: auto;
+        .form-section {
+            margin-top: 24px;
         }
-
-        .copy-btn {
-            background: #28a745;
-            color: white;
-            padding: 0.5rem 1rem;
-            border: none;
+        .upload-label {
+            display: block;
+            margin: 20px 0 10px 0;
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+        .file-input {
+            display: block;
+            margin-bottom: 8px;
+        }
+        .alternative-label {
+            margin-top: 18px;
+            font-size: 0.98rem;
+            color: #444;
+        }
+        textarea {
+            width: 100%;
+            min-height: 60px;
+            border: 1px solid #ccc;
             border-radius: 4px;
-            cursor: pointer;
-            margin-top: 1rem;
-            font-size: 0.9rem;
+            margin-top: 6px;
+            margin-bottom: 6px;
+            padding: 8px;
+            font-size: 1rem;
         }
-
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2.5rem;
-            }
-            
-            .container {
-                padding: 1rem;
-            }
-            
-            .modal-content {
-                margin: 5% auto;
-                padding: 1.5rem;
-            }
+        .small-option {
+            font-size: 0.92rem;
+            margin-top: 8px;
+            color: #666;
+        }
+        @media (max-width: 700px) {
+            .container { padding: 18px 6px 18px 6px; }
+            h1 { font-size: 1.2rem; padding: 8px 10px; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header class="header">
-            <h1>Experimental Realism AI (ERA)</h1>
-            <p class="subtitle">Make your consumer behavior experiments look and feel just like the actual website.</p>
-        </header>
-
-        <div class="cta-section">
-            <p class="cta-intro">Start with a screenshot of any online retail webpage. Then, click 'Begin Here' and we will help you design it and integrate with Qualtrics.</p>
-            <button class="cta-button" onclick="openModal()">Begin Here</button>
-            <p class="cta-description">Click 'Begin Here' to create your realistic consumer choice screen</p>
+        <h1 class="center">Experimental Realism AI (ERA)</h1>
+        <div class="center">
+            <button id="begin-btn">Begin Here</button>
         </div>
 
-        <section class="examples-section">
-            <h2 class="examples-title">Examples: Realistic Consumer Choice Experiments</h2>
-            <div class="examples-grid">
-				<div class="example-card" onclick="window.open('https://vlab.decisionsciences.columbia.edu/kmrkva/mlwebexamples/netflix_2025.html')">
-							<img class="example-preview" src="netflix2025_screenshot.png" alt="Netflix Example Preview">
-                    <div class="example-content">
-                        <h3>Netflix</h3>
-                        <p>Subscription choice with realistic Netflix interface</p>
+        <!-- Step 1: Upload/Describe -->
+        <div class="step" id="step-1">
+            <form id="upload-form" enctype="multipart/form-data" autocomplete="off" onsubmit="return false;">
+                <div class="form-section center">
+                    <label class="upload-label" for="screenshot">Upload a screenshot of the webpage you want to mimic:</label>
+                    <input type="file" id="screenshot" name="screenshot" accept=".png,.jpg,.jpeg,.webp,.gif" class="file-input">
+                </div>
+                <div class="form-section center">
+                    <div class="small-option alternative-label">
+                        Or if you don't have a screenshot, you can try to describe in detail the webpage you want to mimic, including all choice options on the page and perhaps a webpage/choice that it will be most similar to:
                     </div>
+                    <textarea id="description" name="description" placeholder="Describe your desired webpage here..."></textarea>
                 </div>
-				<div class="example-card" onclick="window.open('https://vlab.decisionsciences.columbia.edu/kmrkva/mlwebexamples/dropbox_2025.html')">
-					<img class="example-preview" src="dropbox2025_screenshot.png" alt="Dropbox Example Preview">
-					<div class="example-content">	
-                        <h3>Dropbox</h3>
-                        <p>Consumer choice between Dropbox subscriptions with an authentic Dropbox design</p>
-                    </div>
+                <div class="center">
+                    <button id="next-to-form" style="margin-top:18px; font-size:1.2rem; padding:14px 40px; font-weight:700;">Next</button>
                 </div>
-				<div class="example-card" onclick="window.open('https://vlab.decisionsciences.columbia.edu/kmrkva/mlwebexamples/dropbox_2025.html')">
-					<img class="example-preview" src="walmart2025_screenshot.png" alt="Walmart Example Preview">
-                    <div class="example-content">
-                        <h3>Walmart</h3>
-                        <p>Walmart.com product choice with the look & feel of their website.</p>
-                    </div>
-                </div>
-                <div class="example-card" onclick="window.open('https://vlab.decisionsciences.columbia.edu/kmrkva/ERAexamples/amazon2025.html', '_blank')">
-                    <img class="example-preview" src="amazon2025_screenshot.png" alt="Amazon Example Preview">
-                    <div class="example-content">
-                        <h3>Amazon Cancellation</h3>
-                        <p>Amazon Prime subscription cancellation screen, after EU forced them to re-design it</p>
-                    </div>
-                </div>
-                <div class="example-card" onclick="window.open('https://iphone-rosy-eight.vercel.app', '_blank')">
-                    <<img class="example-preview" src="apple2025_screenshot.png" alt="Apple Example Preview">
-                    <div class="example-content">
-                        <h3>Apple</h3>
-                        <p>Realistic Apple page (which iPhone is best for you), with edits to permit mouselabWEB-like process tracking.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="how-it-works">
-            <h2>How it works:</h2>
-            <div class="steps">
-                <div class="step">Decide which webpage/consumer choice you want to mimic. Take a screenshot of it.</div>
-                <div class="step">Use the "Begin Here" form to get a detailed prompt to use on v0.dev.</div>
-                <div class="step">Go to v0.dev, upload your screenshot and copy the full detailed prompt that you receive from us.</div>
-                <div class="step">Integrate with Qualtrics (which will redirect to your realistic webpage and then back to the next page of your Qualtrics survey)</div>
-            </div>
-        </section>
-    </div>
-
-    <!-- Modal -->
-    <div id="formModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h2>Create Your Realistic Consumer Choice Screen</h2>
-            <form id="eraForm" onsubmit="handleSubmit(event)">
-                <div class="form-group">
-                    <label for="email">Your Email Address:</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
-
-                <div class="form-group">
-                    <label>When should the webpage redirect back to Qualtrics?</label>
-                    <div class="radio-group">
-                        <div class="radio-item">
-                            <input type="radio" id="redirect1" name="redirect" value="clicks on any option that indicates their choice" required>
-                            <label for="redirect1">When the user clicks on any option that indicates their choice</label>
-                        </div>
-                        <div class="radio-item">
-                            <input type="radio" id="redirect2" name="redirect" value="clicks the ___ button (e.g., continue, add to cart, etc)" required>
-                            <label for="redirect2">When the user clicks the ___ button (e.g., continue, add to cart, etc)</label>
-                        </div>
-                        <div class="radio-item">
-                            <input type="radio" id="redirect3" name="redirect" value="custom action" required>
-                            <label for="redirect3">When the user</label>
-                            <input type="text" id="customRedirect" placeholder="describe custom action here" style="margin-left: 0.5rem; flex: 1;">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Which of the following data points do you want to record? (These will be added to your Qualtrics data if you follow the steps for embedded data)</label>
-                    <div class="checkbox-group">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="choice" name="dataPoints" value="choice">
-                            <label for="choice">Choice</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="allClicks" name="dataPoints" value="allClicks">
-                            <label for="allClicks">AllClicks (record everything the user clicks on)</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="decisionTime" name="dataPoints" value="decisionTime">
-                            <label for="decisionTime">DecisionTime (record the amount of time spent on this choice screen prior to finalizing the decision)</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="maxScroll" name="dataPoints" value="maxScroll">
-                            <label for="maxScroll">MaxScroll</label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="modifications">Describe anything you want to look different on your webpage than in your screenshot:</label>
-                    <textarea id="modifications" name="modifications" placeholder="Describe any changes you'd like to make..."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>Does your experiment require 2+ versions of this webpage? (i.e. multiple conditions that will show the same webpage but with 1 change or experimental manipulation)</label>
-                    <div class="radio-group">
-                        <div class="radio-item">
-                            <input type="radio" id="multipleVersionsYes" name="multipleVersions" value="Yes" onchange="toggleVersionDescription()">
-                            <label for="multipleVersionsYes">Yes</label>
-                        </div>
-                        <div class="radio-item">
-                            <input type="radio" id="multipleVersionsNo" name="multipleVersions" value="No" onchange="toggleVersionDescription()">
-                            <label for="multipleVersionsNo">No</label>
-                        </div>
-                    </div>
-                    <div id="versionDescription" class="conditional-field">
-                        <label for="versionDifference">Describe the difference between the 2 versions:</label>
-                        <textarea id="versionDifference" name="versionDifference" placeholder="Describe the differences between versions..."></textarea>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="qualtricsUrl">What is the URL for your Qualtrics survey?</label>
-                    <input type="text" id="qualtricsUrl" name="qualtricsUrl" placeholder="https://your-qualtrics-survey-url.com" required>
-                </div>
-
-                <button type="submit" class="submit-btn">Generate Prompt</button>
             </form>
+        </div>
 
-            <div id="promptResult" class="prompt-result">
-                <h3>Your Generated Prompt:</h3>
-                <div id="promptText" class="prompt-text"></div>
-                <button class="copy-btn" onclick="copyPrompt()">Copy to Clipboard</button>
-                <p style="margin-top: 1rem; color: #666; font-size: 0.9rem;">
-                    A copy of this prompt has been sent to your email address and to our team.
-                </p>
-            </div>
+        <!-- Step 2: The rest of your form goes here (original contents that showed after Begin Here) -->
+        <div class="step" id="step-2">
+            <!-- Your original form contents go here.
+                 For now, I'll add a placeholder. Replace this with your actual form fields. -->
+            <form id="main-form" autocomplete="off">
+                <div class="form-section">
+                    <!-- Example existing field -->
+                    <label for="projectTitle">Project Title:</label>
+                    <input type="text" id="projectTitle" name="projectTitle" required style="width: 100%; padding: 7px; margin-top: 5px; margin-bottom: 15px; border-radius: 4px; border: 1px solid #bbb;">
+                </div>
+                <div class="form-section">
+                    <!-- Add your other fields here -->
+                </div>
+                <div class="center">
+                    <input type="submit" value="Submit">
+                </div>
+            </form>
         </div>
     </div>
 
     <script>
-        function openModal() {
-            document.getElementById('formModal').style.display = 'block';
-        }
+        // Initial step logic
+        const beginBtn = document.getElementById('begin-btn');
+        const step1 = document.getElementById('step-1');
+        const step2 = document.getElementById('step-2');
+        const nextToFormBtn = document.getElementById('next-to-form');
 
-        function closeModal() {
-            document.getElementById('formModal').style.display = 'none';
-        }
+        // Hide both steps initially
+        step1.classList.remove('active');
+        step2.classList.remove('active');
 
-        function toggleVersionDescription() {
-            const yesSelected = document.getElementById('multipleVersionsYes').checked;
-            const descriptionField = document.getElementById('versionDescription');
-            descriptionField.style.display = yesSelected ? 'block' : 'none';
-        }
+        beginBtn.addEventListener('click', function() {
+            beginBtn.style.display = 'none';
+            step1.classList.add('active');
+        });
 
-        function handleSubmit(event) {
-            event.preventDefault();
-            
-            const formData = new FormData(event.target);
-            
-            // Get form values
-            const email = formData.get('email');
-            const redirect = formData.get('redirect');
-            const customRedirect = document.getElementById('customRedirect').value;
-            const dataPoints = formData.getAll('dataPoints');
-            const modifications = formData.get('modifications');
-            const multipleVersions = formData.get('multipleVersions');
-            const versionDifference = formData.get('versionDifference');
-            const qualtricsUrl = formData.get('qualtricsUrl');
-
-            // Generate prompt
-            const prompt = generatePrompt({
-                email,
-                redirect: redirect === 'custom action' ? customRedirect : redirect,
-                dataPoints,
-                modifications,
-                multipleVersions,
-                versionDifference,
-                qualtricsUrl
-            });
-
-            // Display prompt
-            document.getElementById('promptText').textContent = prompt;
-            document.getElementById('promptResult').style.display = 'block';
-
-            // Send emails (in a real implementation, this would be handled by a backend service)
-            sendEmails(email, prompt);
-        }
-
-        function generatePrompt(data) {
-            let prompt = "Please make a .html webpage based on the following:\n\n";
-            
-            // Add first 3 words of each response
-            const responses = [
-                data.email,
-                data.redirect,
-                data.dataPoints.join(', '),
-                data.modifications,
-                data.multipleVersions + (data.versionDifference ? ': ' + data.versionDifference : ''),
-                data.qualtricsUrl
-            ];
-
-            responses.forEach(response => {
-                if (response) {
-                    const firstThreeWords = response.split(' ').slice(0, 3).join(' ');
-                    prompt += firstThreeWords + '\n';
-                }
-            });
-
-            // Add redirect instruction
-            const redirectAction = data.redirect.split(' ').slice(3).join(' ') || data.redirect;
-            prompt += `\nPlease redirect to ${data.qualtricsUrl} when the user ${redirectAction}`;
-
-            return prompt;
-        }
-
-        function sendEmails(userEmail, prompt) {
-            // Note: In a real implementation, this would make an API call to a backend service
-            // that handles email sending using a service like SendGrid, Mailgun, etc.
-            console.log('Sending email to:', userEmail);
-            console.log('Sending email to: kmrkva@alumni.nd.edu');
-            console.log('Prompt:', prompt);
-        }
-
-        function copyPrompt() {
-            const promptText = document.getElementById('promptText').textContent;
-            navigator.clipboard.writeText(promptText).then(() => {
-                const btn = event.target;
-                const originalText = btn.textContent;
-                btn.textContent = 'Copied!';
-                btn.style.background = '#28a745';
-                setTimeout(() => {
-                    btn.textContent = originalText;
-                    btn.style.background = '';
-                }, 2000);
-            });
-        }
-
-        // Close modal when clicking outside of it
-        window.onclick = function(event) {
-            const modal = document.getElementById('formModal');
-            if (event.target === modal) {
-                closeModal();
-            }
-        }
+        nextToFormBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Optionally, you can validate that user selected a file or wrote a description here
+            step1.classList.remove('active');
+            step2.classList.add('active');
+        });
     </script>
 </body>
 </html>
