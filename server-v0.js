@@ -1,4 +1,11 @@
 // server-v0.js - ERA Backend Server with v0.dev API Integration
+require('dotenv').config(); // load .env
+
+const emailUser = process.env.EMAIL_USER;
+const emailPass = process.env.EMAIL_PASS;
+const v0Key = process.env.V0_API_KEY;
+
+// ... rest of your server code
 const express = require('express');
 const multer = require('multer');
 const fs = require('fs').promises;
