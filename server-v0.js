@@ -263,7 +263,7 @@ async function generateWebpageWithV0(screenshotPath, prompt) {
     }
 }
 
-async function convertReactToHTML(reactCode) {
+async function generateHTMLFromReact(reactCode) {
     try {
         const response = await fetch(`${V0_API_BASE}/generate`, {
             method: 'POST',
@@ -277,6 +277,7 @@ async function convertReactToHTML(reactCode) {
                 framework: 'vanilla'
             })
         });
+
 
         if (response.ok) {
             const result = await response.json();
