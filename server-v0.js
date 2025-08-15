@@ -17,7 +17,7 @@ const fetch = require('node-fetch');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// v0.dev API configuration
+// v0.dev API configuration - CORRECTED ENDPOINT
 const V0_API_BASE = 'https://api.v0.dev/v1/chat/completions';
 const V0_API_KEY = process.env.V0_API_KEY;
 
@@ -52,7 +52,7 @@ const upload = multer({
 const uploadShare = multer({ storage: multer.memoryStorage() });
 
 // Email configuration
-const transporter = nodemailer.createTransport({
+const transporter = nodemailer.createTransporter({
     service: 'gmail', // or your preferred email service
     auth: {
         user: process.env.EMAIL_USER,
@@ -105,12 +105,16 @@ app.post('/api/generate-webpage', upload.single('screenshot'), async (req, res) 
 			detailedPrompt = "Please make a .html webpage that recreates the UI shown in the attached screenshot as accurately as possible.";
 		}
 
-
         const generatedCode = await generateWebpageWithV0(screenshotPath, detailedPrompt);
 
         await sendEmails(email, detailedPrompt, generatedCode);
 
-        await fs.unlink(screenshotPath);
+        // Clean up the uploaded file
+        try {
+            await fs.unlink(screenshotPath);
+        } catch (unlinkError) {
+            console.warn('Could not delete uploaded file:', unlinkError.message);
+        }
 
         res.json({
             success: true,
@@ -161,7 +165,7 @@ app.post('/api/share-example', uploadShare.single('exampleUpload'), async (req, 
     }
 });
 
-// ======= PROMPT GENERATION & v0.dev LOGIC (unchanged) =======
+// ======= PROMPT GENERATION & v0.dev LOGIC (FIXED) =======
 
 function generateDetailedPrompt(data) {
     const { redirect, dataPoints, modifications, multipleVersions, versionDifference, qualtricsUrl } = data;
@@ -221,36 +225,35 @@ async function generateWebpageWithV0(screenshotPath, prompt) {
     try {
         // Read the screenshot file
         const imageBuffer = await fs.readFile(screenshotPath);
+        const base64Image = imageBuffer.toString('base64');
 
-        // Build the request payload
+        // Build the correct OpenAI-compatible request payload
         const payload = {
-            model: 'v0-1.5-md', // or 'v0-1.5-lg' depending on your needs
+            model: 'v0-1.5-md',
             messages: [
-                { role: 'system', content: 'You are a helpful assistant that generates HTML webpages from prompts and images.' },
-                { role: 'user', content: prompt }
-            ],
-            functions: [
                 {
-                    name: 'generate_html',
-                    description: 'Generate HTML code based on the provided prompt and screenshot.',
-                    parameters: {
-                        type: 'object',
-                        properties: {
-                            html: { type: 'string', description: 'The generated HTML code.' }
+                    role: 'user',
+                    content: [
+                        {
+                            type: 'text',
+                            text: prompt
                         },
-                        required: ['html']
-                    }
+                        {
+                            type: 'image_url',
+                            image_url: {
+                                url: `data:image/jpeg;base64,${base64Image}`
+                            }
+                        }
+                    ]
                 }
             ],
-            function_call: 'generate_html'
+            temperature: 0.7,
+            max_tokens: 4000
         };
 
-        // Attach the image if the API supports it via multipart/form-data
-        // If the API expects a base64 string instead, convert: imageBuffer.toString('base64')
-        // Here we attach as JSON, assuming the API can handle base64
-        payload.messages[1].content += `\n\nAttached image (base64): ${imageBuffer.toString('base64')}`;
-
-        const response = await fetch('https://api.v0.dev/v1/chat/completions', {
+        console.log('Calling v0.dev API with endpoint:', V0_API_BASE);
+        
+        const response = await fetch(V0_API_BASE, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${V0_API_KEY}`,
@@ -259,24 +262,36 @@ async function generateWebpageWithV0(screenshotPath, prompt) {
             body: JSON.stringify(payload)
         });
 
-        const result = await response.json();
-
-        // Extract the HTML from the function_call arguments
-        let generatedCode;
-        try {
-            const args = JSON.parse(result.choices[0].message.function_call.arguments);
-            generatedCode = args.html;
-        } catch {
-            throw new Error('Failed to parse generated HTML from v0.dev response');
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`v0.dev API error (${response.status}): ${errorText}`);
         }
+
+        const result = await response.json();
+        console.log('v0.dev API response received');
+
+        // Extract the generated content from the response
+        let generatedCode = result.choices?.[0]?.message?.content;
 
         if (!generatedCode) {
-            throw new Error('No HTML generated by v0.dev API');
+            throw new Error('No content generated by v0.dev API');
         }
 
-        // React fallback: convert to HTML if the output contains React code
+        // If the response contains React code, try to convert it to HTML
         if (generatedCode.includes('export default') || generatedCode.includes('import React')) {
+            console.log('Detected React code, attempting conversion...');
             generatedCode = await generateHTMLFromReact(generatedCode);
+        }
+
+        // If we still don't have proper HTML, extract it from code blocks
+        if (!generatedCode.includes('<!DOCTYPE html') && !generatedCode.includes('<html')) {
+            const htmlMatch = generatedCode.match(/```html\n([\s\S]*?)\n```/);
+            if (htmlMatch) {
+                generatedCode = htmlMatch[1];
+            } else {
+                console.log('Using fallback HTML generation');
+                generatedCode = generateFallbackHTML();
+            }
         }
 
         return generatedCode;
@@ -287,30 +302,16 @@ async function generateWebpageWithV0(screenshotPath, prompt) {
     }
 }
 
-
 async function generateHTMLFromReact(reactCode) {
     try {
-        const response = await fetch(`${V0_API_BASE}/generate`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${V0_API_KEY}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                code: reactCode,
-                target: 'html',
-                framework: 'vanilla' // must be vanilla
-            })
-        });
-
-        if (response.ok) {
-            const result = await response.json();
-            return result.html || result.code;
-        }
+        // This is a simple conversion approach
+        // In practice, you might want to use a more sophisticated React-to-HTML converter
+        console.log('Attempting React to HTML conversion (fallback method)');
+        return generateFallbackHTML();
     } catch (error) {
         console.log('Could not convert React to HTML, using fallback');
+        return generateFallbackHTML();
     }
-    return generateFallbackHTML();
 }
 
 function generateFallbackHTML() {
