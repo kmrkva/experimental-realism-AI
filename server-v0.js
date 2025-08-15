@@ -81,14 +81,30 @@ app.post('/api/generate-webpage', upload.single('screenshot'), async (req, res) 
             return res.status(400).json({ success: false, error: 'Screenshot is required' });
         }
 
-        const detailedPrompt = generateDetailedPrompt({
-            redirect,
-            dataPoints: Array.isArray(dataPoints) ? dataPoints : [dataPoints].filter(Boolean),
-            modifications,
-            multipleVersions,
-            versionDifference,
-            qualtricsUrl
-        });
+        let detailedPrompt;
+		const hasAllOldFields =
+			redirect &&
+			dataPoints &&
+			modifications !== undefined &&
+			multipleVersions &&
+			versionDifference !== undefined &&
+			qualtricsUrl;
+
+		if (hasAllOldFields) {
+			// Use the original detailed prompt
+			detailedPrompt = generateDetailedPrompt({
+				redirect,
+				dataPoints: Array.isArray(dataPoints) ? dataPoints : [dataPoints].filter(Boolean),
+				modifications,
+				multipleVersions,
+				versionDifference,
+				qualtricsUrl
+			});
+		} else {
+			// Use the new simple fixed prompt
+			detailedPrompt = "Please make a .html webpage that recreates the UI shown in the attached screenshot as accurately as possible.";
+		}
+
 
         const generatedCode = await generateWebpageWithV0(screenshotPath, detailedPrompt);
 
