@@ -664,7 +664,6 @@
         <div class="modal-content" style="max-width:400px;">
             <span class="close" onclick="document.getElementById('shareExampleModal').style.display='none'">&times;</span>
             <h2 style="margin-bottom:1.5rem;">Share Your Example</h2>
-            <!-- UPDATED FORM: Added id and name attributes, removed inline onsubmit -->
             <form id="shareExampleForm">
                 <div class="form-group">
                     <label for="exampleUpload">Upload Screenshot or File:</label>
@@ -682,8 +681,8 @@
             </form>
         </div>
     </div>
-    <!-- Main Modal (unchanged except for colors) -->
-    <div id="formModal" class="modal">
+    <!-- Main Modal -->
+    <div id="formModal" class="modal" style="display:none;">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
             <div class="stepper">
@@ -709,7 +708,7 @@
             <!-- Step 2: The rest of the form -->
             <div id="modal-step-2" style="display:none;">
                 <h2>Create Your Realistic Consumer Choice Screen</h2>
-                <form id="eraForm" onsubmit="handleSubmit(event)">
+                <form id="eraForm">
                     <div class="form-group">
                         <label for="email">Your Email Address:</label>
                         <input type="email" id="email" name="email" required>
@@ -815,17 +814,25 @@
             const descriptionField = document.getElementById('versionDescription');
             descriptionField.style.display = yesSelected ? 'block' : 'none';
         }
-        function handleSubmit(event) {
+
+        document.getElementById('eraForm').onsubmit = async function(event) {
             event.preventDefault();
-            const formData = new FormData(event.target);
-            const email = formData.get('email');
-            const redirect = formData.get('redirect');
+
+            // Get the screenshot file from Step 1
+            const screenshotInput = document.getElementById('screenshot');
+            const screenshotFile = screenshotInput && screenshotInput.files.length > 0 ? screenshotInput.files[0] : null;
+
+            // Gather all Step 2 data for prompt
+            const form = event.target;
+            const formData2 = new FormData(form);
+            const email = formData2.get('email');
+            const redirect = formData2.get('redirect');
             const customRedirect = document.getElementById('customRedirect').value;
-            const dataPoints = formData.getAll('dataPoints');
-            const modifications = formData.get('modifications');
-            const multipleVersions = formData.get('multipleVersions');
-            const versionDifference = formData.get('versionDifference');
-            const qualtricsUrl = formData.get('qualtricsUrl');
+            const dataPoints = formData2.getAll('dataPoints');
+            const modifications = formData2.get('modifications');
+            const multipleVersions = formData2.get('multipleVersions');
+            const versionDifference = formData2.get('versionDifference');
+            const qualtricsUrl = formData2.get('qualtricsUrl');
             const prompt = generatePrompt({
                 email,
                 redirect: redirect === 'custom action' ? customRedirect : redirect,
@@ -835,10 +842,37 @@
                 versionDifference,
                 qualtricsUrl
             });
-            document.getElementById('promptText').textContent = prompt;
+
+            if (!screenshotFile) {
+                alert('Please upload a screenshot in Step 1.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('screenshot', screenshotFile);
+            formData.append('prompt', prompt);
+
+            // Show loading
+            const promptTextDiv = document.getElementById('promptText');
+            promptTextDiv.textContent = 'Generating webpage... please wait.';
             document.getElementById('promptResult').style.display = 'block';
-            sendEmails(email, prompt);
-        }
+
+            try {
+                const response = await fetch('/api/generate-webpage', {
+                    method: 'POST',
+                    body: formData,
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    promptTextDiv.textContent = data.generatedCode || 'No code returned.';
+                } else {
+                    promptTextDiv.textContent = 'Error generating webpage. Please try again later.';
+                }
+            } catch (err) {
+                promptTextDiv.textContent = 'Server error. Please try again later.';
+            }
+        };
+
         function generatePrompt(data) {
             let prompt = "Please make a .html webpage based on the following:\n\n";
             const responses = [
@@ -859,11 +893,7 @@
             prompt += `\nPlease redirect to ${data.qualtricsUrl} when the user ${redirectAction}`;
             return prompt;
         }
-        function sendEmails(userEmail, prompt) {
-            console.log('Sending email to:', userEmail);
-            console.log('Sending email to: kmrkva@alumni.nd.edu');
-            console.log('Prompt:', prompt);
-        }
+
         function copyPrompt() {
             const promptText = document.getElementById('promptText').textContent;
             navigator.clipboard.writeText(promptText).then(() => {
@@ -877,14 +907,15 @@
                 }, 2000);
             });
         }
+
         window.onclick = function(event) {
             const modal = document.getElementById('formModal');
             const shareModal = document.getElementById('shareExampleModal');
             if (event.target === modal) closeModal();
             if (event.target === shareModal) shareModal.style.display = 'none';
-        }
+        };
 
-        // === Add this: Share Example form POST logic ===
+        // Share Example form POST logic (unchanged)
         document.getElementById('shareExampleForm').onsubmit = async function(e) {
             e.preventDefault();
             const form = e.target;
