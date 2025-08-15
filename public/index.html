@@ -777,15 +777,18 @@
                         <label for="qualtricsUrl">What is the URL for your Qualtrics survey?</label>
                         <input type="text" id="qualtricsUrl" name="qualtricsUrl" placeholder="https://your-qualtrics-survey-url.com" required>
                     </div>
-                    <button type="submit" class="submit-btn">Generate Prompt</button>
+                    <button type="submit" class="submit-btn">Generate Webpage</button>
                 </form>
-                <div id="promptResult" class="prompt-result">
-                    <h3>Your Generated Prompt:</h3>
+                <div id="webpageResult" class="prompt-result">
+                    <h3>Your Generated Webpage Code:</h3>
                     <div id="promptText" class="prompt-text"></div>
-                    <button class="copy-btn" onclick="copyPrompt()">Copy to Clipboard</button>
-                    <p style="margin-top: 1rem; color: #666; font-size: 0.9rem;">
-                        A copy of this prompt has been sent to your email address and to our team.
-                    </p>
+                    <h3 style="margin-top:2rem;">Next Steps to Use in Qualtrics:</h3>
+                    <ol id="integrationSteps" style="margin-left:1.2rem;">
+                        <li><strong>Host the HTML file</strong> — Save the code above as <code>index.html</code> and upload it to your hosting (GitHub Pages, Vercel, or your lab server).</li>
+                        <li><strong>Link from Qualtrics</strong> — In your survey flow, use a Descriptive Text or redirect to the hosted page for the stimulus screen.</li>
+                        <li><strong>Pass Embedded Data</strong> — Add Embedded Data fields (e.g., <code>choice</code>, <code>decisionTime</code>) and ensure the page appends them to the Qualtrics redirect URL.</li>
+                        <li><strong>Test end-to-end</strong> — Pilot the survey to verify the page loads, captures interactions, and returns the data back to Qualtrics correctly.</li>
+                    </ol>
                 </div>
             </div>
         </div>
@@ -815,47 +818,29 @@
             descriptionField.style.display = yesSelected ? 'block' : 'none';
         }
 
+        // UPDATED: use fixed prompt; require screenshot; show generated HTML + steps
         document.getElementById('eraForm').onsubmit = async function(event) {
             event.preventDefault();
 
-            // Get the screenshot file from Step 1
+            // Require a screenshot from Step 1
             const screenshotInput = document.getElementById('screenshot');
             const screenshotFile = screenshotInput && screenshotInput.files.length > 0 ? screenshotInput.files[0] : null;
-
-            // Gather all Step 2 data for prompt
-            const form = event.target;
-            const formData2 = new FormData(form);
-            const email = formData2.get('email');
-            const redirect = formData2.get('redirect');
-            const customRedirect = document.getElementById('customRedirect').value;
-            const dataPoints = formData2.getAll('dataPoints');
-            const modifications = formData2.get('modifications');
-            const multipleVersions = formData2.get('multipleVersions');
-            const versionDifference = formData2.get('versionDifference');
-            const qualtricsUrl = formData2.get('qualtricsUrl');
-            const prompt = generatePrompt({
-                email,
-                redirect: redirect === 'custom action' ? customRedirect : redirect,
-                dataPoints,
-                modifications,
-                multipleVersions,
-                versionDifference,
-                qualtricsUrl
-            });
-
             if (!screenshotFile) {
                 alert('Please upload a screenshot in Step 1.');
                 return;
             }
 
+            // Fixed prompt per current design plan
+            const fixedPrompt = "Please make a .html webpage that recreates the UI shown in the attached screenshot as accurately as possible.";
+
             const formData = new FormData();
             formData.append('screenshot', screenshotFile);
-            formData.append('prompt', prompt);
+            formData.append('prompt', fixedPrompt);
 
-            // Show loading
-            const promptTextDiv = document.getElementById('promptText');
-            promptTextDiv.textContent = 'Generating webpage... please wait.';
-            document.getElementById('promptResult').style.display = 'block';
+            // Show loading state and result container
+            const codeOut = document.getElementById('promptText');
+            codeOut.textContent = 'Generating webpage... please wait.';
+            document.getElementById('webpageResult').style.display = 'block';
 
             try {
                 const response = await fetch('/api/generate-webpage', {
@@ -864,49 +849,14 @@
                 });
                 if (response.ok) {
                     const data = await response.json();
-                    promptTextDiv.textContent = data.generatedCode || 'No code returned.';
+                    codeOut.textContent = data.generatedCode || 'No code returned.';
                 } else {
-                    promptTextDiv.textContent = 'Error generating webpage. Please try again later.';
+                    codeOut.textContent = 'Error generating webpage. Please try again later.';
                 }
             } catch (err) {
-                promptTextDiv.textContent = 'Server error. Please try again later.';
+                codeOut.textContent = 'Server error. Please try again later.';
             }
         };
-
-        function generatePrompt(data) {
-            let prompt = "Please make a .html webpage based on the following:\n\n";
-            const responses = [
-                data.email,
-                data.redirect,
-                data.dataPoints.join(', '),
-                data.modifications,
-                data.multipleVersions + (data.versionDifference ? ': ' + data.versionDifference : ''),
-                data.qualtricsUrl
-            ];
-            responses.forEach(response => {
-                if (response) {
-                    const firstThreeWords = response.split(' ').slice(0, 3).join(' ');
-                    prompt += firstThreeWords + '\n';
-                }
-            });
-            const redirectAction = data.redirect.split(' ').slice(3).join(' ') || data.redirect;
-            prompt += `\nPlease redirect to ${data.qualtricsUrl} when the user ${redirectAction}`;
-            return prompt;
-        }
-
-        function copyPrompt() {
-            const promptText = document.getElementById('promptText').textContent;
-            navigator.clipboard.writeText(promptText).then(() => {
-                const btn = event.target;
-                const originalText = btn.textContent;
-                btn.textContent = 'Copied!';
-                btn.style.background = '#43e97b';
-                setTimeout(() => {
-                    btn.textContent = originalText;
-                    btn.style.background = '';
-                }, 2000);
-            });
-        }
 
         window.onclick = function(event) {
             const modal = document.getElementById('formModal');
