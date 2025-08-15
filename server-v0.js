@@ -5,7 +5,6 @@ const emailUser = process.env.EMAIL_USER;
 const emailPass = process.env.EMAIL_PASS;
 const v0Key = process.env.V0_API_KEY;
 
-// ... rest of your server code
 const express = require('express');
 const multer = require('multer');
 const fs = require('fs').promises;
@@ -20,14 +19,13 @@ const PORT = process.env.PORT || 3000;
 
 // v0.dev API configuration
 const V0_API_BASE = 'https://api.v0.dev';
-const V0_API_KEY = process.env.V0_API_KEY; // Set this in your environment variables
+const V0_API_KEY = process.env.V0_API_KEY;
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public')); // Serve your HTML file from public folder
 
-// Configure multer for file uploads
+// Configure multer for file uploads (for webpage generation)
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'uploads/');
@@ -36,7 +34,6 @@ const storage = multer.diskStorage({
         cb(null, Date.now() + '-' + file.originalname);
     }
 });
-
 const upload = multer({
     storage: storage,
     limits: {
@@ -51,14 +48,19 @@ const upload = multer({
     }
 });
 
+// For Share Example (accept any file type, in-memory storage)
+const uploadShare = multer({ storage: multer.memoryStorage() });
+
 // Email configuration
 const transporter = nodemailer.createTransport({
     service: 'gmail', // or your preferred email service
     auth: {
-        user: process.env.EMAIL_USER, // Your email
-        pass: process.env.EMAIL_PASS  // Your email password or app password
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
     }
 });
+
+// ======= EXISTING ENDPOINTS =======
 
 // Main endpoint for webpage generation
 app.post('/api/generate-webpage', upload.single('screenshot'), async (req, res) => {
@@ -79,7 +81,6 @@ app.post('/api/generate-webpage', upload.single('screenshot'), async (req, res) 
             return res.status(400).json({ success: false, error: 'Screenshot is required' });
         }
 
-        // Generate the detailed prompt
         const detailedPrompt = generateDetailedPrompt({
             redirect,
             dataPoints: Array.isArray(dataPoints) ? dataPoints : [dataPoints].filter(Boolean),
@@ -89,13 +90,10 @@ app.post('/api/generate-webpage', upload.single('screenshot'), async (req, res) 
             qualtricsUrl
         });
 
-        // Call v0.dev API to generate the webpage
         const generatedCode = await generateWebpageWithV0(screenshotPath, detailedPrompt);
 
-        // Send emails
         await sendEmails(email, detailedPrompt, generatedCode);
 
-        // Clean up uploaded file
         await fs.unlink(screenshotPath);
 
         res.json({
@@ -113,9 +111,45 @@ app.post('/api/generate-webpage', upload.single('screenshot'), async (req, res) 
     }
 });
 
+// ======= NEW ENDPOINT: Share Your Example =======
+app.post('/api/share-example', uploadShare.single('exampleUpload'), async (req, res) => {
+    try {
+        const { yourEmail, exampleDesc } = req.body;
+        const file = req.file;
+
+        let emailText =
+            `A new example was submitted via ERA website.\n\n` +
+            `From: ${yourEmail || 'No email provided'}\n\n` +
+            `Description: ${exampleDesc || 'No description provided.'}`;
+
+        let mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: process.env.NOTIFY_TO_EMAIL || process.env.EMAIL_USER || 'kmrkva@alumni.nd.edu',
+            subject: 'New Example Shared via ERA Website',
+            text: emailText,
+            attachments: file
+                ? [
+                    {
+                        filename: file.originalname,
+                        content: file.buffer
+                    }
+                ]
+                : []
+        };
+
+        await transporter.sendMail(mailOptions);
+        res.json({ success: true });
+    } catch (err) {
+        console.error('Error sending "Share Example" email:', err);
+        res.status(500).json({ error: 'Failed to send email.' });
+    }
+});
+
+// ======= PROMPT GENERATION & v0.dev LOGIC (unchanged) =======
+
 function generateDetailedPrompt(data) {
     const { redirect, dataPoints, modifications, multipleVersions, versionDifference, qualtricsUrl } = data;
-    
+
     let prompt = `Create a complete HTML webpage that recreates the design shown in the uploaded screenshot. This is for a consumer choice experiment with the following requirements:
 
 DESIGN & LAYOUT:
@@ -169,25 +203,17 @@ IMPORTANT: The webpage should look and feel exactly like a real website/app, not
 
 async function generateWebpageWithV0(screenshotPath, prompt) {
     try {
-        // Create form data for v0.dev API
         const formData = new FormData();
-        
-        // Add the screenshot file
         const imageBuffer = await fs.readFile(screenshotPath);
         formData.append('image', imageBuffer, {
             filename: 'screenshot.png',
             contentType: 'image/png'
         });
-        
-        // Add the prompt
         formData.append('prompt', prompt);
-        
-        // Add additional parameters for v0.dev
-        formData.append('framework', 'html'); // Specify we want plain HTML
-        formData.append('style', 'tailwind'); // Use Tailwind CSS
-        formData.append('typescript', 'false'); // Plain JavaScript
+        formData.append('framework', 'html');
+        formData.append('style', 'tailwind');
+        formData.append('typescript', 'false');
 
-        // Make API call to v0.dev
         const response = await fetch(`${V0_API_BASE}/generate`, {
             method: 'POST',
             headers: {
@@ -203,15 +229,12 @@ async function generateWebpageWithV0(screenshotPath, prompt) {
         }
 
         const result = await response.json();
-        
-        // Extract the generated code from v0.dev response
         let generatedCode = result.code || result.html || result.content;
-        
+
         if (!generatedCode) {
             throw new Error('No code generated by v0.dev API');
         }
 
-        // If v0.dev returns a React component, we need to convert it to plain HTML
         if (generatedCode.includes('export default') || generatedCode.includes('import React')) {
             generatedCode = await convertReactToHTML(generatedCode);
         }
@@ -225,11 +248,7 @@ async function generateWebpageWithV0(screenshotPath, prompt) {
 }
 
 async function convertReactToHTML(reactCode) {
-    // If v0.dev returns React code, convert it to plain HTML
-    // This is a simplified conversion - you might want to use a more sophisticated React-to-HTML converter
-    
     try {
-        // Make another API call to v0.dev to convert React to HTML
         const response = await fetch(`${V0_API_BASE}/convert`, {
             method: 'POST',
             headers: {
@@ -250,8 +269,6 @@ async function convertReactToHTML(reactCode) {
     } catch (error) {
         console.log('Could not convert React to HTML, using fallback');
     }
-
-    // Fallback: Generate a basic HTML template with tracking
     return generateFallbackHTML();
 }
 
@@ -400,7 +417,6 @@ async function sendEmails(userEmail, prompt, generatedCode) {
         console.log('Email sent successfully');
     } catch (error) {
         console.error('Error sending email:', error);
-        // Don't throw error here, as the main functionality still works
     }
 }
 
@@ -430,6 +446,7 @@ createUploadsDir().then(() => {
         console.log('- V0_API_KEY: Your v0.dev API key');
         console.log('- EMAIL_USER: Your email address');
         console.log('- EMAIL_PASS: Your email password/app password');
+        console.log('- NOTIFY_TO_EMAIL: Notification recipient for shared examples (optional, defaults to EMAIL_USER)');
     });
 });
 

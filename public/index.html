@@ -641,7 +641,6 @@
 							<rect x="12" y="12" width="40" height="40" rx="8" stroke="#08ffe6" stroke-width="2.5" fill="none"/>
 							<path d="M32 22v20M22 32h20" stroke="#08ffe6"/>
 						</svg>
-						<!-- Add this line below for the extra text: -->
 						<span style="color:#08ffe6;font-size:1.02rem;margin-top:10px;font-weight:600;">Upload your design here</span>
 					</div>
 					<div class="example-content">
@@ -665,18 +664,19 @@
         <div class="modal-content" style="max-width:400px;">
             <span class="close" onclick="document.getElementById('shareExampleModal').style.display='none'">&times;</span>
             <h2 style="margin-bottom:1.5rem;">Share Your Example</h2>
-            <form onsubmit="event.preventDefault(); document.getElementById('shareExampleModal').style.display='none'; alert('Thank you for sharing your example! We will review it soon.');">
+            <!-- UPDATED FORM: Added id and name attributes, removed inline onsubmit -->
+            <form id="shareExampleForm">
                 <div class="form-group">
                     <label for="exampleUpload">Upload Screenshot or File:</label>
-                    <input type="file" id="exampleUpload" accept=".jpg,.jpeg,.png,.pdf,.docx,.zip">
+                    <input type="file" id="exampleUpload" name="exampleUpload" accept=".jpg,.jpeg,.png,.pdf,.docx,.zip">
                 </div>
                 <div class="form-group">
                     <label for="yourEmail">Your Email (optional):</label>
-                    <input type="email" id="yourEmail" placeholder="name@email.com">
+                    <input type="email" id="yourEmail" name="yourEmail" placeholder="name@email.com">
                 </div>
                 <div class="form-group">
                     <label for="exampleDesc">Description (optional):</label>
-                    <textarea id="exampleDesc" placeholder="Describe your example and why it may help other researchers..."></textarea>
+                    <textarea id="exampleDesc" name="exampleDesc" placeholder="Describe your example and why it may help other researchers..."></textarea>
                 </div>
                 <button type="submit" class="submit-btn">Submit Example</button>
             </form>
@@ -883,6 +883,24 @@
             if (event.target === modal) closeModal();
             if (event.target === shareModal) shareModal.style.display = 'none';
         }
+
+        // === Add this: Share Example form POST logic ===
+        document.getElementById('shareExampleForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+            const response = await fetch('/api/share-example', {
+                method: 'POST',
+                body: formData,
+            });
+            if (response.ok) {
+                alert('Thank you for sharing your example! We will review it soon.');
+                document.getElementById('shareExampleModal').style.display = 'none';
+                form.reset();
+            } else {
+                alert('There was an error submitting your example. Please try again later.');
+            }
+        };
     </script>
 </body>
 </html>
