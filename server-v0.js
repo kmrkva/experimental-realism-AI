@@ -18,7 +18,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // v0.dev API configuration
-const V0_API_BASE = 'https://api.v0.dev';
+const V0_API_BASE = 'https://api.v0.dev/v1';
 const V0_API_KEY = process.env.V0_API_KEY;
 
 app.use(cors());
@@ -265,7 +265,7 @@ async function generateWebpageWithV0(screenshotPath, prompt) {
 
 async function convertReactToHTML(reactCode) {
     try {
-        const response = await fetch(`${V0_API_BASE}/convert`, {
+        const response = await fetch(`${V0_API_BASE}/generate`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${V0_API_KEY}`,
